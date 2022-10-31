@@ -1,3 +1,5 @@
+// Copyright 2022, Riley Thurm, All rights reserved.
+
 /* 10-26-22 notes
  * Change Luko sealant to be for Natura, not Tectiva
  * Fix issue of Luko not removing from cart when no Natura tabs open

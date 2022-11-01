@@ -1,4 +1,6 @@
-// Copyright 2022, Riley Thurm, All rights reserved.
+/* 11-1-22 notes
+ * Remove lines where Perimeter Edges placeholder values are altered since we are no longer using those
+*/
 
 /* 10-26-22 notes
  * Change Luko sealant to be for Natura, not Tectiva
@@ -404,10 +406,10 @@ window.addEventListener('load', () => {
                     let tab = id.replace(pattern, "$2");
                     // Flip the X/Y placeholder display and update recordObject
                     if (inputs[i].checked) {
-                        g(`perim-edges-${finish}-${tab}`).placeholder = "X Perimeter Edges";
+                        //g(`perim-edges-${finish}-${tab}`).placeholder = "X Perimeter Edges";
                         recordObject[finish].tabs[tab - 1].horizOrient = 1;
                     } else {
-                        g(`perim-edges-${finish}-${tab}`).placeholder = "Y Perimeter Edges";
+                        //g(`perim-edges-${finish}-${tab}`).placeholder = "Y Perimeter Edges";
                         recordObject[finish].tabs[tab - 1].horizOrient = 0;
                     }
                     // Hide and show the horizontal/vertical divs

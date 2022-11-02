@@ -954,12 +954,9 @@ function updateCart() {
             grandTotal += getValue(accessoryIds[i].id + "-qty") * accessoryIds[i].price;
         }
     }
-    let displayGrandTotal = addCommas(grandTotal)
-    if (!displayGrandTotal.includes(".")) {
-        displayGrandTotal = displayGrandTotal + ".00";
-    }
-    g('grand-total-display').innerText = displayGrandTotal;
-    g('grand-total').value = displayGrandTotal;
+
+    g('grand-total-display').innerText = addCommas(grandTotal);
+    g('grand-total').value = addCommas(grandTotal);
 }
 
 function calculateAll() {
@@ -1042,9 +1039,15 @@ function addCommas(number) {
     while (pattern.test(number)) {
         number = number.replace(pattern, "$1,$2");
     }
+
     if (number[number.length - 2] === '.') {
         number += '0';
     }
+
+    if (!number.includes(".")) {
+        number += ".00";
+    }
+
     return number;
 }
 

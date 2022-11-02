@@ -1,5 +1,8 @@
 /* 11-1-22 notes
  * Change from changing Perimeter Edges placeholder values to changing header above input field
+ * Combined all window onload functions since I have worked around webflow's 10,000 character limit
+ * Refactored where a clearAccessoryQty function was only called once
+ * Add ".00" to grand total when result is a whole number
 */
 
 /* 10-26-22 notes
@@ -173,21 +176,21 @@ window.addEventListener('load', () => {
 
     displayCheckoutPane();
     // TODO
-	// attempt at removing empty fields from form submission. Haven't checked if this works but it probably
-	// doesn't since it looks like it happend after the submission
-	/*
+    // attempt at removing empty fields from form submission. Haven't checked if this works but it probably
+    // doesn't since it looks like it happend after the submission
+    /*
     document.querySelector('[data-name="FastTrack-Equitone-Order"]').addEventListener('submit', () => {
-    	let inputs = document.getElementsByTagName('input');
-    	for (let i = 0; i < inputs.length; i++) {
-    		if (inputs[i].value === 0 || inputs[i].value === "") {
-    			inputs[i].remove();
-    		}
-    	}
-    	formSubmit();
+        let inputs = document.getElementsByTagName('input');
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].value === 0 || inputs[i].value === "") {
+                inputs[i].remove();
+            }
+        }
+        formSubmit();
     }); */
-    
+
     document.querySelector('[data-name="FastTrack-Equitone-Order"]').addEventListener('submit', formSubmit);
-    
+
     g('previous-button').addEventListener('click', (event) => {
         if (activeCheckoutPane === 1) return;
         if (formSubmitted) return;
@@ -199,12 +202,11 @@ window.addEventListener('load', () => {
         activeCheckoutPane++;
         displayCheckoutPane();
     });
-});
 
-window.addEventListener('load', () => {
+
     calculatorTabHTML = g('calculator-FINISH-TAB').outerHTML;
     g('calculator-FINISH-TAB').style.display = "none";
-    
+
     // get finishes form CMS collection
     let getFinishes = document.getElementsByClassName('finish-data');
     for (let i = 0; i < getFinishes.length; i++) {
@@ -268,7 +270,7 @@ window.addEventListener('load', () => {
             g(`grain-horizontal-${f}-${tab}`).style.display = "block";
             // If NATURA, hide the grain direction toggle
             if (f[0] === 'N') {
-            	g(`grain-toggle-${f}-${tab}`).style.display = "none";
+                g(`grain-toggle-${f}-${tab}`).style.display = "none";
             }
         }
 
@@ -289,9 +291,7 @@ window.addEventListener('load', () => {
             calculateAll();
         });
     }
-});
-    
-window.addEventListener('load', () => {
+
     // allow manual changes to accessories
     // the manualChangeToAccessory boolean in this and the next loop is used here to facilitate the behavior of the toggle
     // where if you alter qty manually while applyReccs is true, it sets it to false without 
@@ -310,35 +310,61 @@ window.addEventListener('load', () => {
     // add listener to apply reccs toggle 
     g('Apply-Recommendations').addEventListener('input', (event) => {
         applyReccs = g('Apply-Recommendations').checked;
-        //g(`apply-reccs-yes`).style.display = applyReccs ?  "block" : "none";
-        //g(`apply-reccs-no`).style.display = applyReccs ?  "none" : "block";	
-        if (!manualChangeToAccessory) clearAccessoryQty();
+        if (!manualChangeToAccessory) {
+            // Only clear accessories that are calculated by our script.
+            // Leave alone ones that are only altered by the user.
+            for (let finIndex = 0; finIndex < finishes.length; finIndex++) {
+                let f = finishes[finIndex];
+                g(`cmr-${f}-qty`).value = "";
+                g(`cmr-${f}-total`).innerText = "0";
+                g(`cms-${f}-qty`).value = "";
+                g(`cms-${f}-total`).innerText = "0";
+            }
+            g(`cf-horiz-rail-qty`).value = "";
+            g(`cf-horiz-rail-total`).innerText = "0";
+            g(`cf-clip-qty`).value = "";
+            g(`cf-clip-total`).innerText = "0";
+            g(`alum-hat-ext-qty`).value = "";
+            g(`alum-hat-ext-total`).innerText = "0";
+            g(`alum-zee-ext-qty`).value = "";
+            g(`alum-zee-ext-total`).innerText = "0";
+            g(`red-stop-sleeve-qty`).value = "";
+            g(`red-stop-sleeve-total`).innerText = "0";
+            g(`foamstrip-roll-qty`).value = "";
+            g(`foamstrip-roll-total`).innerText = "0";
+            g(`luko-sealant-qty`).value = "";
+            g(`luko-sealant-total`).innerText = "0";
+            g(`screw-sleeves-qty`).value = "";
+            g(`screw-sleeves-total`).innerText = "0";
+            g(`tuf-s-concealed-fastener-qty`).value = "";
+            g(`tuf-s-concealed-fastener-total`).innerText = "0";
+        }
         manualChangeToAccessory = false;
         calculateAll();
     });
 
-	// when finishes are added, check if any natura ones are visible
-	// Display Luko sealant field if so
-	let finishBubbles = document.getElementsByClassName('material-library__item');
-	for (let i = 0; i < finishBubbles.length; i++) {
+    // when finishes are added, check if any natura ones are visible
+    // Display Luko sealant field if so
+    let finishBubbles = document.getElementsByClassName('material-library__item');
+    for (let i = 0; i < finishBubbles.length; i++) {
         finishBubbles[i].addEventListener('click', (event) => {
-    		setTimeout(() => {
-    			let finishTabs = document.getElementsByClassName('quantity-selection');
-    			let foundNatura = false;
-				for (let i = 0; i < finishTabs.length; i++) {
-    			    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
-    			    	foundNatura = true;
-    			    }
-    			}
-    			if (foundNatura) {
-    				g('luko-div').style.display = 'flex';
-    			} else {
-    				g('luko-div').style.display = 'none';
-    				g(`luko-sealant-qty`).value = "";
-    				g(`luko-sealant-total`).innerText = "0";
-    			}
-    			calculateAll();
-    		}, 100);
+            setTimeout(() => {
+                let finishTabs = document.getElementsByClassName('quantity-selection');
+                let foundNatura = false;
+                for (let i = 0; i < finishTabs.length; i++) {
+                    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
+                        foundNatura = true;
+                    }
+                }
+                if (foundNatura) {
+                    g('luko-div').style.display = 'flex';
+                } else {
+                    g('luko-div').style.display = 'none';
+                    g(`luko-sealant-qty`).value = "";
+                    g(`luko-sealant-total`).innerText = "0";
+                }
+                calculateAll();
+            }, 100);
         });
     }
 
@@ -352,24 +378,24 @@ window.addEventListener('load', () => {
             resetFinishTab(id);
             resetScrewAndRivetTab(id);
             calculateAll();
-            
-    		setTimeout(() => {
-    			let finishTabs = document.getElementsByClassName('quantity-selection');
-    			let foundNatura = false;
-				for (let i = 0; i < finishTabs.length; i++) {
-    			    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
-    			    	foundNatura = true;
-    			    }
-    			}
-    			if (foundNatura) {
-    				g('luko-div').style.display = 'flex';
-    			} else {
-    				g('luko-div').style.display = 'none';
-    				g(`luko-sealant-qty`).value = "";
-    				g(`luko-sealant-total`).innerText = "0";
-    			}
-    			calculateAll();
-    		}, 100);
+
+            setTimeout(() => {
+                let finishTabs = document.getElementsByClassName('quantity-selection');
+                let foundNatura = false;
+                for (let i = 0; i < finishTabs.length; i++) {
+                    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
+                        foundNatura = true;
+                    }
+                }
+                if (foundNatura) {
+                    g('luko-div').style.display = 'flex';
+                } else {
+                    g('luko-div').style.display = 'none';
+                    g(`luko-sealant-qty`).value = "";
+                    g(`luko-sealant-total`).innerText = "0";
+                }
+                calculateAll();
+            }, 100);
         });
     }
 
@@ -468,8 +494,6 @@ window.addEventListener('load', () => {
     }
 });
 
-
-        	
 let applyReccs = false;
 let manualChangeToAccessory = false;
 let formSubmitted = false;
@@ -497,14 +521,12 @@ let calculatorTabHTML = "";
 // 5 (maxVisibleTabs) objects with the properties "sheetPanelArea" etc. stored
 let recordObject = {};
 
-// lsm stands for letter-series-map
-let lsm = {
+let letterSeriesMap = {
     'L': 'linea',
     'T': 'tectiva',
     'N': 'natura'
 }
 
-// TODO change values from these input fields to the full name? to avoid this extra step of a lookup dictionary
 let fastenerMap = {
     'CF': 'Concealed Fasteners',
     'EF': 'Exposed Fasteners',
@@ -541,35 +563,17 @@ function displayCheckoutPane() {
             g('previous-button').style.display = "none";
             g('next-button').style.display = "block";
             g('submit-button').style.display = "none";
-
-            //g('div-block-71').style.display = "block";
-            //g('order-total-wrapper').style.display = "block";
             break;
         case 2:
             g('previous-button').style.display = "block";
             g('next-button').style.display = "block";
             g('submit-button').style.display = "none";
-
-            //g('div-block-71').style.display = "block";
-            //g('order-total-wrapper').style.display = "block";
             break;
         case 3:
             g('previous-button').style.display = "block";
             g('next-button').style.display = "none";
             g('submit-button').style.display = "block";
-
-            //g('div-block-71').style.display = "block";
-            //g('order-total-wrapper').style.display = "block";
             break;
-        /*case 4:
-            g('previous-button').style.display = "none";
-            g('next-button').style.display = "none";
-            g('submit-button').style.display = "none";
-        	
-            //g('div-block-71').style.display = "none";
-            //g('order-total-wrapper').style.display = "none";
-            break;
-        */
     }
 }
 
@@ -676,21 +680,21 @@ function resetFinishTab(f) {
 }
 
 function createTab(finish, tab) {
-	let copy = calculatorTabHTML.replaceAll('FINISH', '' + finish + '')
-	copy = copy.replaceAll('TAB', tab)
-	copy = copy.replaceAll('~HEIGHT~', getSeriesInfo(lsm[finish[0]], 'height'))
-	copy = copy.replaceAll('~WIDTH~', getSeriesInfo(lsm[finish[0]], 'width'))
-	copy = copy.replaceAll('~1~', `<span id="sheets-recc-${finish}-${tab}">0</span>`)
-	copy = copy.replaceAll('~2~', `<span id="panels-per-sheet-${finish}-${tab}">0</span>`)
-	copy = copy.replaceAll('~3~', `<span id="yieldloss-${finish}-${tab}">0</span>%`)
-	
-	return copy;
+    let copy = calculatorTabHTML.replaceAll('FINISH', '' + finish + '')
+    copy = copy.replaceAll('TAB', tab)
+    copy = copy.replaceAll('~HEIGHT~', getSeriesInfo(letterSeriesMap[finish[0]], 'height'))
+    copy = copy.replaceAll('~WIDTH~', getSeriesInfo(letterSeriesMap[finish[0]], 'width'))
+    copy = copy.replaceAll('~1~', `<span id="sheets-recc-${finish}-${tab}">0</span>`)
+    copy = copy.replaceAll('~2~', `<span id="panels-per-sheet-${finish}-${tab}">0</span>`)
+    copy = copy.replaceAll('~3~', `<span id="yieldloss-${finish}-${tab}">0</span>%`)
+
+    return copy;
 }
 
 function dimensionsError(f, tab) {
     g(`width-${f}-${tab}`).style.color = "#d40000";
     g(`height-${f}-${tab}`).style.color = "#d40000";
-    console.log("in error check");
+    //console.log("in error check");
     g(`sheets-recc-${f}-${tab}`).innerText = 'Error';
     g(`error-message-${f}-${tab}`).style.display = 'block';
     g(`yieldloss-${f}-${tab}`).innerText = "0";
@@ -875,7 +879,7 @@ function calculate(series, finIndex, tab) {
     globalAccessoriesCount.totalQuantRedStopSleeves += totalQuantRedStopSleeves;
     globalAccessoriesCount.totalQuantScrewSleeves += totalQuantScrewSleeves;
     if (series == 'natura') {
-    	globalAccessoriesCount.totalLukoBottles += totalLukoBottles;
+        globalAccessoriesCount.totalLukoBottles += totalLukoBottles;
     }
     globalAccessoriesCount.totalLFFoamTape += totalLFFoamTape;
     globalAccessoriesCount.concealedHorizontalRailFeet += concealedHorizontalRailFeet;
@@ -926,17 +930,17 @@ function updateCart() {
     // add accessories to cart total
     for (let i = 0; i < accessoryIds.length; i++) {
         if (getValue(accessoryIds[i].id + "-qty") >= 1 && accessoryIds[i][fastenerSystem]) {
-        	// skip luko if no Natura tabs open
-        	if (accessoryIds[i].id == 'luko-sealant') {
-        		let finishTabs = document.getElementsByClassName('quantity-selection');
-    			let foundNatura = false;
-				for (let i = 0; i < finishTabs.length; i++) {
-    			    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
-    			    	foundNatura = true;
-    			    }
-    			}
-    			if (!foundNatura) continue;
-        	}
+            // skip luko if no Natura tabs open
+            if (accessoryIds[i].id == 'luko-sealant') {
+                let finishTabs = document.getElementsByClassName('quantity-selection');
+                let foundNatura = false;
+                for (let i = 0; i < finishTabs.length; i++) {
+                    if (finishTabs[i].style.display == 'block' && finishTabs[i].id.startsWith('N')) {
+                        foundNatura = true;
+                    }
+                }
+                if (!foundNatura) continue;
+            }
             // create cart tab
             let noun = getValue(accessoryIds[i].id + "-qty") === 1 ? accessoryIds[i].nounSingular : accessoryIds[i].nounPlural;
             createCartItem(
@@ -950,7 +954,10 @@ function updateCart() {
             grandTotal += getValue(accessoryIds[i].id + "-qty") * accessoryIds[i].price;
         }
     }
-
+    grandTotal = addCommas(grandTotal)
+    if (!grandTotal.includes(".")) {
+        grandTotal = grandTotal + ".00";
+    }
     g('grand-total-display').innerText = addCommas(grandTotal);
     g('grand-total').value = addCommas(grandTotal);
 }
@@ -974,16 +981,16 @@ function calculateAll() {
         if (g(`${f}-quantity-selection`).style.display === 'none') continue;
         if (!recordObject[f].manualSheetQty) g(`sheets-input-${f}`).value = 0;
         for (let tab = 1; tab <= recordObject[f].visibleTabs; tab++) {
-            let series = lsm[f[0]];
+            let series = letterSeriesMap[f[0]];
             calculate(series, finIndex, tab);
             if (!recordObject[f].manualSheetQty) {
                 let t = getValue(`sheets-input-${f}`);
                 t += recordObject[f].tabs[tab - 1].sheetCountEstimate;
                 g(`sheets-input-${f}`).value = t;
                 finishPrice += recordObject[f].tabs[tab - 1].sheetCountEstimate *
-                    getSeriesInfo(lsm[f[0]], "price");
+                    getSeriesInfo(letterSeriesMap[f[0]], "price");
             } else {
-                finishPrice = g(`sheets-input-${f}`).value * getSeriesInfo(lsm[f[0]], "price");
+                finishPrice = g(`sheets-input-${f}`).value * getSeriesInfo(letterSeriesMap[f[0]], "price");
             }
 
         }
@@ -1016,44 +1023,17 @@ function calculateAll() {
         g(`screw-sleeves-total`).innerText = fastenerSystem === 'EF - Wood' ? "$" + addCommas(getValue(`screw-sleeves-qty`) * parseFloat(g(`screw-sleeves-price`).innerText)) : "0";
         g(`tuf-s-concealed-fastener-qty`).value = fastenerSystem === 'CF' ? Math.ceil(globalAccessoriesCount.tufsFastener / tufsFastenerPerBox) : "";
         g(`tuf-s-concealed-fastener-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`tuf-s-concealed-fastener-qty`) * parseFloat(g(`tuf-s-concealed-fastener-price`).innerText)) : "0";
-    
-    	
+
+
         g(`luko-sealant-qty`).value = Math.ceil(globalAccessoriesCount.totalLukoBottles);
         g(`luko-sealant-total`).innerText = "$" + addCommas(getValue(`luko-sealant-qty`) * parseFloat(g(`luko-sealant-price`).innerText));
-       
+
     }
-    console.log(recordObject);
+    //console.log(recordObject);
 
     updateCart();
 }
 
-function clearAccessoryQty() {
-    for (let finIndex = 0; finIndex < finishes.length; finIndex++) {
-        let f = finishes[finIndex];
-        g(`cmr-${f}-qty`).value = "";
-        g(`cmr-${f}-total`).innerText = "0";
-        g(`cms-${f}-qty`).value = "";
-        g(`cms-${f}-total`).innerText = "0";
-    }
-    g(`cf-horiz-rail-qty`).value = "";
-    g(`cf-horiz-rail-total`).innerText = "0";
-    g(`cf-clip-qty`).value = "";
-    g(`cf-clip-total`).innerText = "0";
-    g(`alum-hat-ext-qty`).value = "";
-    g(`alum-hat-ext-total`).innerText = "0";
-    g(`alum-zee-ext-qty`).value = "";
-    g(`alum-zee-ext-total`).innerText = "0";
-    g(`red-stop-sleeve-qty`).value = "";
-    g(`red-stop-sleeve-total`).innerText = "0";
-    g(`foamstrip-roll-qty`).value = "";
-    g(`foamstrip-roll-total`).innerText = "0";
-    g(`luko-sealant-qty`).value = "";
-    g(`luko-sealant-total`).innerText = "0";
-    g(`screw-sleeves-qty`).value = "";
-    g(`screw-sleeves-total`).innerText = "0";
-    g(`tuf-s-concealed-fastener-qty`).value = "";
-    g(`tuf-s-concealed-fastener-total`).innerText = "0";
-}
 
 function addCommas(number) {
     number = Math.round(number * 100) / 100;

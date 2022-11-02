@@ -954,12 +954,12 @@ function updateCart() {
             grandTotal += getValue(accessoryIds[i].id + "-qty") * accessoryIds[i].price;
         }
     }
-    grandTotal = addCommas(grandTotal)
-    if (!grandTotal.includes(".")) {
-        grandTotal = grandTotal + ".00";
+    let displayGrandTotal = addCommas(grandTotal)
+    if (!displayGrandTotal.includes(".")) {
+        displayGrandTotal = displayGrandTotal + ".00";
     }
-    g('grand-total-display').innerText = addCommas(grandTotal);
-    g('grand-total').value = addCommas(grandTotal);
+    g('grand-total-display').innerText = displayGrandTotal;
+    g('grand-total').value = displayGrandTotal;
 }
 
 function calculateAll() {

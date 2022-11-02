@@ -1031,7 +1031,6 @@ function calculateAll() {
     updateCart();
 }
 
-
 function addCommas(number) {
     number = Math.round(number * 100) / 100;
     number = number.toString();

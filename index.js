@@ -1,3 +1,7 @@
+/* 11-10-22 notes 
+ * lsm changed to letterSeriesMap
+*/
+
 /* 11-9-22 notes
  * Hats and zees removed from Concealed Fastener selection
 */
@@ -290,9 +294,9 @@ window.addEventListener('load', () => {
         g(`sheets-input-${f}`).addEventListener('input', (event) => {
             recordObject[f].manualSheetQty = true;
             g(`price-${f}`).innerText =
-                addCommas(getSeriesInfo(lsm[f[0]], "price") * getValue(`sheets-input-${f}`));
+                addCommas(getSeriesInfo(letterSeriesMap[f[0]], "price") * getValue(`sheets-input-${f}`));
             recordObject[f].finishSheetsPrice =
-                getSeriesInfo(lsm[f[0]], "price") * getValue(`sheets-input-${f}`);
+                getSeriesInfo(letterSeriesMap[f[0]], "price") * getValue(`sheets-input-${f}`);
             calculateAll();
         });
     }

@@ -1,3 +1,7 @@
+/* 11-9-22 notes
+ * Hats and zees removed from Concealed Fastener selection
+*/
+
 /* 11-1-22 notes
  * Change from changing Perimeter Edges placeholder values to changing header above input field
  * Combined all window onload functions since I have worked around webflow's 10,000 character limit
@@ -50,7 +54,7 @@ window.addEventListener('load', () => {
             nounPlural: 'each',
             displayName: g('alum-hat-ext-display-name').innerText,
             price: parseFloat(g('alum-hat-ext-price').innerText),
-            'CF': true,
+            'CF': false,
             'EF': true,
             'EF - Wood': false,
         },
@@ -60,7 +64,7 @@ window.addEventListener('load', () => {
             nounPlural: 'each',
             displayName: g('alum-zee-ext-display-name').innerText,
             price: parseFloat(g('alum-zee-ext-price').innerText),
-            'CF': true,
+            'CF': false,
             'EF': true,
             'EF - Wood': false,
         },
@@ -1005,21 +1009,21 @@ function calculateAll() {
     if (applyReccs) {
         // set other accessories here since they are global
         g(`cf-horiz-rail-qty`).value = fastenerSystem === 'CF' ? Math.ceil(globalAccessoriesCount.concealedHorizontalRailFeet / concealedHorizontalRailFeetPer) : "";
-        g(`cf-horiz-rail-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`cf-horiz-rail-qty`) * parseFloat(g(`cf-horiz-rail-price`).innerText)) : "0";
+        g(`cf-horiz-rail-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`cf-horiz-rail-qty`) * parseFloat(g(`cf-horiz-rail-price`).innerText)) : "";
         g(`cf-clip-qty`).value = fastenerSystem === 'CF' ? Math.ceil(globalAccessoriesCount.concealedClips) : "";
-        g(`cf-clip-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`cf-clip-qty`) * parseFloat(g(`cf-clip-price`).innerText)) : "0";
-        g(`alum-hat-ext-qty`).value = Math.ceil(globalAccessoriesCount.hatExtrusionFeet / hatExtrusionFeetPer);
-        g(`alum-hat-ext-total`).innerText = "$" + addCommas(getValue(`alum-hat-ext-qty`) * parseFloat(g(`alum-hat-ext-price`).innerText));
-        g(`alum-zee-ext-qty`).value = Math.ceil(globalAccessoriesCount.zeeExtrusionFeet / zeeExtrusionFeetPer);
-        g(`alum-zee-ext-total`).innerText = "$" + addCommas(getValue(`alum-zee-ext-qty`) * parseFloat(g(`alum-zee-ext-price`).innerText));
+        g(`cf-clip-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`cf-clip-qty`) * parseFloat(g(`cf-clip-price`).innerText)) : "";
+        g(`alum-hat-ext-qty`).value = fastenerSystem != 'CF' ? Math.ceil(globalAccessoriesCount.hatExtrusionFeet / hatExtrusionFeetPer) : "";
+        g(`alum-hat-ext-total`).innerText = fastenerSystem != 'CF' ? "$" + addCommas(getValue(`alum-hat-ext-qty`) * parseFloat(g(`alum-hat-ext-price`).innerText)) : "";
+        g(`alum-zee-ext-qty`).value = fastenerSystem != 'CF' ? Math.ceil(globalAccessoriesCount.zeeExtrusionFeet / zeeExtrusionFeetPer) : "";
+        g(`alum-zee-ext-total`).innerText = fastenerSystem != 'CF' ? "$" + addCommas(getValue(`alum-zee-ext-qty`) * parseFloat(g(`alum-zee-ext-price`).innerText)) : "";
         g(`red-stop-sleeve-qty`).value = fastenerSystem === 'EF' ? Math.ceil(globalAccessoriesCount.totalQuantRedStopSleeves / redStopSleevesQtyPerBox) : "";
-        g(`red-stop-sleeve-total`).innerText = fastenerSystem === 'EF' ? "$" + addCommas(getValue(`foamstrip-roll-qty`) * parseFloat(g(`foamstrip-roll-price`).innerText)) : "0";
+        g(`red-stop-sleeve-total`).innerText = fastenerSystem === 'EF' ? "$" + addCommas(getValue(`foamstrip-roll-qty`) * parseFloat(g(`foamstrip-roll-price`).innerText)) : "";
         g(`foamstrip-roll-qty`).value = Math.ceil(globalAccessoriesCount.totalLFFoamTape / foamstripRollFtPer);
         g(`foamstrip-roll-total`).innerText = "$" + addCommas(getValue(`foamstrip-roll-qty`) * parseFloat(g(`foamstrip-roll-price`).innerText));
         g(`screw-sleeves-qty`).value = fastenerSystem === 'EF - Wood' ? Math.ceil(globalAccessoriesCount.totalQuantScrewSleeves / screwSleevesPerBox) : "";
-        g(`screw-sleeves-total`).innerText = fastenerSystem === 'EF - Wood' ? "$" + addCommas(getValue(`screw-sleeves-qty`) * parseFloat(g(`screw-sleeves-price`).innerText)) : "0";
+        g(`screw-sleeves-total`).innerText = fastenerSystem === 'EF - Wood' ? "$" + addCommas(getValue(`screw-sleeves-qty`) * parseFloat(g(`screw-sleeves-price`).innerText)) : "";
         g(`tuf-s-concealed-fastener-qty`).value = fastenerSystem === 'CF' ? Math.ceil(globalAccessoriesCount.tufsFastener / tufsFastenerPerBox) : "";
-        g(`tuf-s-concealed-fastener-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`tuf-s-concealed-fastener-qty`) * parseFloat(g(`tuf-s-concealed-fastener-price`).innerText)) : "0";
+        g(`tuf-s-concealed-fastener-total`).innerText = fastenerSystem === 'CF' ? "$" + addCommas(getValue(`tuf-s-concealed-fastener-qty`) * parseFloat(g(`tuf-s-concealed-fastener-price`).innerText)) : "";
 
 
         g(`luko-sealant-qty`).value = Math.ceil(globalAccessoriesCount.totalLukoBottles);

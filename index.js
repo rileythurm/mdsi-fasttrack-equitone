@@ -1053,4 +1053,3 @@ function addCommas(number) {
 
     return number;
 }
-

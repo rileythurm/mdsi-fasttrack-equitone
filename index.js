@@ -25,8 +25,6 @@
  * Remove old createTab function
 */
 
-
-
 window.addEventListener('load', () => {
     accessoryIds = [
         {

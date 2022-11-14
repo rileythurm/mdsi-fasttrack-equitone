@@ -504,7 +504,7 @@ window.addEventListener('load', () => {
 let applyReccs = false;
 let manualChangeToAccessory = false;
 let formSubmitted = false;
-let fastenerSystem = "CF";
+let fastenerSystem = "EF";
 let activeCheckoutPane = 1; // 1 = Select Materials, 2 = Select Accessories, 3 = Customer Info, 4 = Summary
 let finishes = [];
 let globalAccessoriesCount = {};
